@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>কুইজ অ্যাপ</title>
+  <style>
+    body { font-family: sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .score-box { position: sticky; top: 0; background: #fff; padding: 15px; font-size: 20px; font-weight: bold; box-shadow: 0 2px 5px #ccc; z-index: 999; }
+    .question-card { background: #fff; padding: 20px; border-radius: 10px; margin: 20px 0; box-shadow: 0 2px 10px #ccc; }
+    .question { font-size: 18px; margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .option { padding: 10px; background: #e0e0e0; border-radius: 6px; cursor: pointer; text-align: center; }
+    .option:hover { background: #ccc; }
+  </style>
+</head>
+<body>
+
+<div class="score-box" id="score">স্কোর: 0</div>
+<div id="quizList"></div>
+
+<script>
+  const quizData = JSON.parse(localStorage.getItem("quizData") || "[]");
+  let score = 0;
+  let answered = new Array(quizData.length).fill(false);
+
+  function renderQuiz() {
+    const quizList = document.getElementById("quizList");
+    quizList.innerHTML = "";
+
+    quizData.forEach((q, index) => {
+      const card = document.createElement("div");
+      card.className = "question-card";
+      card.innerHTML = `
+        <div class="question">${index + 1}. ${q.question}</div>
+        <div class="grid">
+          ${q.options.map((opt, i) =>
+            `<div class="option" onclick="checkAnswer(${index}, ${i}, this)">${opt}</div>`
+          ).join("")}
+        </div>
+      `;
+      quizList.appendChild(card);
+    });
+  }
+
+  function checkAnswer(qIndex, selectedIndex, el) {
+    if (answered[qIndex]) return;
+
+    const correct = quizData[qIndex].correct;
+    if (selectedIndex === correct) {
+      score++;
+      document.getElementById("score").innerText = `স্কোর: ${score}`;
+      el.style.background = "#a5d6a7"; // সবুজ
+    } else {
+      el.style.background = "#ef9a9a"; // লাল
+    }
+
+    answered[qIndex] = true;
+  }
+
+  renderQuiz();
+</script>
+
+</body>
+</html>
